@@ -129,19 +129,19 @@ pipeline {
             }
         }
        
-       stage('DepTrigger DEV Deploy') {
-            steps {
-                script {
-                    build job "../${component}-deploy",
-                        wait: false, // Wait for completion
-                        propagate: false, // Propagate status
-                        parameters [
-                            string(name: "appVersion", value: "${appVersion}")
-                            string(name: "deploy_to", value: "dev")
-                        ]
-                }
-            }
-       }
+    //    stage('Trigger DEV Deploy') {
+    //         steps {
+    //             script {
+    //                 build job "../${component}-deploy",
+    //                     wait: false, // Wait for completion
+    //                     propagate: false, // Propagate status
+    //                     parameters [
+    //                         string(name: "appVersion", value: "${appVersion}")
+    //                         string(name: "deploy_to", value: "dev")
+    //                     ]
+    //             }
+    //         }
+    //    }
     }
     post {
         always {
