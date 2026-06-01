@@ -19,7 +19,7 @@ pipeline {
         stage('Read Version') {
             steps {
                 script {
-                    def packageJSON = readJSON file: 'package.json'
+                    def pom = readMavenPom file: 'pom.xml'
                     appVersion = packageJSON.version
                     echo "appversion: ${appVersion}"
                 }
@@ -29,7 +29,7 @@ pipeline {
             steps {
                  script {
                     sh """
-                        npm install --include=dev
+                        mvn clean package
                     """    
                 }  
             }
@@ -38,7 +38,7 @@ pipeline {
             steps {
                 script{
                     sh """
-                        npm test
+                        echo test
                     """
                 }
             }
@@ -128,20 +128,22 @@ pipeline {
                 }    
             }
         }
-       
-       stage('DepTrigger DEV Deploy') {
+        stage('Trivy Scan'){
             steps {
-                script {
-                    build job "../${component}-deploy",
-                        wait: false, // Wait for completion
-                        propagate: false, // Propagate status
-                        parameters [
-                            string(name: "appVersion", value: "${appVersion}")
-                            string(name: "deploy_to", value: "dev")
-                        ]
+                script{
+                    // Only fail for CRITICAL vulnerabilities
+                    sh """
+                        trivy image \
+                        --scanners vuln \
+                        --severity CRITICAL \
+                        --pkg-types os \
+                        --exit-code 1 \
+                        --format table \
+                        ${ACC_ID}.dkr.ecr.us-east-1.amazonaws.com/${PROJECT}/${COMPONENT}:${appVersion}
+                    """
                 }
             }
-       }
+        }
     }
     post {
         always {
