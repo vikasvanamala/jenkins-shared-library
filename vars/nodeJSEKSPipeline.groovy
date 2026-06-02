@@ -138,7 +138,7 @@ def call (Map configMap){
                             wait: false, // Wait for completion
                             propagate: false, // Propagate status
                             parameters: [
-                                string(name: "appVersion", value: "${appVersion}")
+                                string(name: "appVersion", value: "${appVersion}"),
                                 string(name: "deploy_to", value: "dev")
                             ]
                     }
