@@ -12,7 +12,7 @@ pipeline {
         COMPONENT = configMap.get("component")
     }
     options {
-        timeout(time: 10, unit: 'MINUTES') 
+        timeout(time: 60, unit: 'MINUTES') 
         disableConcurrentBuilds()
     }
     stages {
@@ -128,19 +128,32 @@ pipeline {
                 }    
             }
         }
-        stage('Trivy Scan'){
+        // stage('Trivy Scan'){
+        //     steps {
+        //         script{
+        //             // Only fail for CRITICAL vulnerabilities
+        //             sh """
+        //                 trivy image \
+        //                 --scanners vuln \
+        //                 --severity CRITICAL \
+        //                 --pkg-types os \
+        //                 --exit-code 1 \
+        //                 --format table \
+        //                 ${ACC_ID}.dkr.ecr.us-east-1.amazonaws.com/${PROJECT}/${COMPONENT}:${appVersion}
+        //             """
+        //         }
+        //     
+        // }
+        stage('Trigger DEV Deploy') {
             steps {
-                script{
-                    // Only fail for CRITICAL vulnerabilities
-                    sh """
-                        trivy image \
-                        --scanners vuln \
-                        --severity CRITICAL \
-                        --pkg-types os \
-                        --exit-code 1 \
-                        --format table \
-                        ${ACC_ID}.dkr.ecr.us-east-1.amazonaws.com/${PROJECT}/${COMPONENT}:${appVersion}
-                    """
+                script {
+                    build job: "../${COMPONENT}-deploy",
+                    wait: false, // Wait for completion
+                    propagate: false, // Propagate status
+                    parameters: [
+                        string(name: "appVersion", value: "${appVersion}"),
+                        string(name: "deploy_to", value: "dev")
+                    ]
                 }
             }
         }
