@@ -144,7 +144,7 @@ def call (Map configMap){
         //             }
         //         }
         //    }
-        // }
+        }
         post {
             always {
                 echo 'i will always say hello/....'
