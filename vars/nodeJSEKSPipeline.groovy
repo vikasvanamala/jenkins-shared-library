@@ -14,7 +14,7 @@ def call (Map configMap){
             COMPONENT = configMap.get("component")
         }
         options {
-            timeout(time: 10, unit: 'MINUTES') 
+            timeout(time: 30, unit: 'MINUTES') 
             disableConcurrentBuilds()
         }
         stages {
@@ -131,19 +131,19 @@ def call (Map configMap){
                 }
             }
         
-        //    stage('Trigger DEV Deploy') {
-        //         steps {
-        //             script {
-        //                 build job "../${component}-deploy",
-        //                     wait: false, // Wait for completion
-        //                     propagate: false, // Propagate status
-        //                     parameters [
-        //                         string(name: "appVersion", value: "${appVersion}")
-        //                         string(name: "deploy_to", value: "dev")
-        //                     ]
-        //             }
-        //         }
-        //    }
+            stage('Trigger DEV Deploy') {
+                steps {
+                    script {
+                        build job "../${component}-deploy",
+                            wait: false, // Wait for completion
+                            propagate: false, // Propagate status
+                            parameters [
+                                string(name: "appVersion", value: "${appVersion}")
+                                string(name: "deploy_to", value: "dev")
+                            ]
+                    }
+                }
+            }
         }
         post {
             always {
