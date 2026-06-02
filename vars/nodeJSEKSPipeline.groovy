@@ -137,7 +137,7 @@ def call (Map configMap){
                         build job: "../${COMPONENT}-deploy",
                             wait: false, // Wait for completion
                             propagate: false, // Propagate status
-                            parameters [
+                            parameters: [
                                 string(name: "appVersion", value: "${appVersion}")
                                 string(name: "deploy_to", value: "dev")
                             ]
